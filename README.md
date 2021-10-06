@@ -9,7 +9,6 @@ The dataset contains the details of the customers in a bank company such as cred
 [here](https://www.kaggle.com/shubh0799/churn-modelling).
 
 ## Technologies
-
 The project is created with:
 - Python 3.6
 - libraries: pandas, numpy, sklearn, seaborn, matplotlib, xgboost.
