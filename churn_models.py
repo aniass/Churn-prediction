@@ -14,11 +14,11 @@ import warnings
 warnings.simplefilter('ignore')
 
 
-URL = 'C:\Python Scripts\Datasets\churn\Churn_Modelling.csv'
-scaler = StandardScaler()
+URL = '\data\Churn_Modelling.csv'
 
 
 def clean_data(df):
+    '''Cleaning data and convert non numeric values'''
     data = df.drop(['CustomerId','Surname','RowNumber'],axis=1)
     data['Gender'] = data['Gender'].map({'Male' : 0, 'Female' : 1})
     data = pd.get_dummies(data, columns = ['Geography'])
@@ -26,12 +26,14 @@ def clean_data(df):
 
 
 def read_data(path):
+    '''Read and preprocess data'''
     data = pd.read_csv(path)
     df = clean_data(data)
     return df
 
 
 def splitting_data(data):
+    '''Spliting data into train and test set'''
     X = data.drop('Exited', axis=1)
     Y = data['Exited']
     X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=10, stratify=Y)
@@ -39,7 +41,7 @@ def splitting_data(data):
 
 
 def acc_score(model):
-    """The function to calculate accuracy score"""
+    """Accuracy score calculation from cross validation"""
     acc = cross_val_score(model, X_train, y_train, cv=10, scoring='accuracy')
     score = round(acc.mean(), 2)
     return score
@@ -54,6 +56,7 @@ def roc_score(model):
 
    
 def train_models(X_train, X_test, y_train, y_test):
+    ''' Calculating models with score'''
     models = pd.DataFrame()
     classifiers = [
         LogisticRegression(random_state=0),
