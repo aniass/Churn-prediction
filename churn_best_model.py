@@ -31,7 +31,8 @@ def splitting_data(data):
     '''Spliting data into train and test set'''
     X = data.drop('Exited', axis=1)
     Y = data['Exited']
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=10, stratify=Y)
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2,
+                                                  random_state=10, stratify=Y)
     return X_train, X_test, y_train, y_test
 
   
@@ -41,12 +42,12 @@ def evaluation(model):
     # accuracy score
     acc = cross_val_score(model, X_train, y_train, cv=10, scoring='accuracy')
     acc_score = round(acc.mean(), 2)
+    print('Accuracy score: %s' % acc_score)
     # roc auc score
     pred_prob = model.predict_proba(X_test)
     score = roc_auc_score(y_test, pred_prob[:,1])
     roc_score = round(score, 2)
     pred_y = model.predict(X_test)
-    print('Accuracy score: %s' % acc_score)
     print('ROC AUC score: %s' % roc_score)
     # plots
     print(plot_roc_curve(model, X_test, y_test))
@@ -56,7 +57,8 @@ def evaluation(model):
 def train_models(X_train, X_test, y_train, y_test):
     ''' Calculating models with score'''
     model = Pipeline(steps=[('scaler', StandardScaler()),
-                            ('classifier', RandomForestClassifier(n_estimators=200, criterion='entropy', random_state=0))])
+                            ('classifier', RandomForestClassifier(n_estimators=200, 
+                                           criterion='entropy', random_state=0))])
     model.fit(X_train, y_train)
     scores = evaluation(model)
     return scores
