@@ -87,4 +87,3 @@ if __name__ == '__main__':
     df = read_data(URL)
     X_train, X_test, y_train, y_test = splitting_data(df)
     train_models(X_train, X_test, y_train, y_test)
-
