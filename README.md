@@ -13,7 +13,7 @@ The aim of the project were churn prediction in the bank customers. Churn is a t
 ## Project contains:
 - Exploratory Data Analysis - **Churn_EDA.ipynb**
 - Churn prediction with ML algorithms - **Churn.ipynb**
-- Python scripts to train ML models - **churn_models.py, churn_best_model.py**
+- Python scripts to train ML models - **churn_models.py, churn_best_model.py, helper_functions.py**
 - models - models used in the project.
     
 ## Technologies
