@@ -24,3 +24,10 @@ The project is created with:
 **Running the project:**
 
 To run this project use Jupyter Notebook or Google Colab.
+
+You can run the scripts in the terminal:
+
+    churn_models.py
+    churn_best_model.py
+    helper_functions.py
+
