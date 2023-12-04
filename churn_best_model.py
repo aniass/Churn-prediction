@@ -22,17 +22,20 @@ def clean_data(df):
 
 def read_data(path):
     '''Read and preprocess data'''
-    data = pd.read_csv(path)
+    try:
+        data = pd.read_csv(path)
+    except FileNotFoundError:
+        print(f"Error: File not found at {path}")
+        return None
     df = clean_data(data)
     return df
 
 
-def splitting_data(data):
+def splitting_data(data, test_size=0.2, random_state=10):
     '''Spliting data into train and test set'''
     X = data.drop('Exited', axis=1)
     Y = data['Exited']
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2,
-                                                  random_state=10, stratify=Y)
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=test_size, random_state=random_state, stratify=Y)
     return X_train, X_test, y_train, y_test
 
   
@@ -54,7 +57,7 @@ def evaluation(model):
     print(plot_conf_matrix(pred_y, y_test))
 
 
-def train_models(X_train, X_test, y_train, y_test):
+def train_model(X_train, X_test, y_train, y_test):
     ''' Calculating models with score'''
     model = Pipeline(steps=[('scaler', StandardScaler()),
                             ('classifier', RandomForestClassifier(n_estimators=200, 
@@ -67,6 +70,6 @@ def train_models(X_train, X_test, y_train, y_test):
 if __name__ == '__main__':
     df = read_data(URL)
     X_train, X_test, y_train, y_test = splitting_data(df)
-    model = train_models(X_train, X_test, y_train, y_test)
+    model = train_model(X_train, X_test, y_train, y_test)
     # save the model
     dump(model, 'models/rf_model.pkl')
