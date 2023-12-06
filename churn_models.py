@@ -10,11 +10,12 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from xgboost import XGBClassifier
 from sklearn.ensemble import AdaBoostClassifier
-import warnings
-warnings.simplefilter('ignore')
 
 
-URL = '\data\Churn_Modelling.csv'
+URL = r'\data\Churn_Modelling.csv'
+N_NEIGHBORS = 20
+N_ESTIMATORS = 200
+RANDOM_STATE = 0
 
 
 def clean_data(df):
@@ -36,7 +37,7 @@ def splitting_data(data):
     '''Spliting data into train and test set'''
     X = data.drop('Exited', axis=1)
     Y = data['Exited']
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=10, stratify=Y)
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=RANDOM_STATE, stratify=Y)
     return X_train, X_test, y_train, y_test
 
 
@@ -59,11 +60,11 @@ def train_models(X_train, X_test, y_train, y_test):
     ''' Calculating models with score'''
     models = pd.DataFrame()
     classifiers = [
-        LogisticRegression(random_state=0),
-        RandomForestClassifier(n_estimators=200, criterion='entropy', random_state=0),
-        KNeighborsClassifier(n_neighbors=20, metric="minkowski", p=2),
-        AdaBoostClassifier(n_estimators=200 ,random_state=0),
-        XGBClassifier(random_state=1)]
+        LogisticRegression(random_state=RANDOM_STATE),
+        RandomForestClassifier(n_estimators=N_ESTIMATORS, criterion='entropy', random_state=RANDOM_STATE),
+        KNeighborsClassifier(n_neighbors=N_NEIGHBORS, metric="minkowski", p=2),
+        AdaBoostClassifier(n_estimators=N_ESTIMATORS, random_state=RANDOM_STATE),
+        XGBClassifier(random_state=RANDOM_STATE)]
      
     for classifier in classifiers:
         model = Pipeline(steps=[('scaler', StandardScaler()),
@@ -80,10 +81,12 @@ def train_models(X_train, X_test, y_train, y_test):
         models = models.append(pd.DataFrame(param_dict, index=[0]))
         
     models.reset_index(drop=True, inplace=True)
-    print(models.sort_values(by='Roc Auc', ascending=False))
+    models_sorted = models.sort_values(by='Roc Auc', ascending=False)
+    return models_sorted
      
   
 if __name__ == '__main__':
     df = read_data(URL)
     X_train, X_test, y_train, y_test = splitting_data(df)
-    train_models(X_train, X_test, y_train, y_test)
+    result_models = train_models(X_train, X_test, y_train, y_test)
+    print(result_models)
