@@ -11,6 +11,9 @@ from joblib import dump
 
 URL = 'data\Churn_Modelling.csv'
 
+RANDOM_STATE = 0
+N_ESTIMATORS = 200
+
 
 def clean_data(df):
     '''Cleaning data and convert non numeric values'''
@@ -31,45 +34,48 @@ def read_data(path):
     return df
 
 
-def splitting_data(data, test_size=0.2, random_state=10):
+def splitting_data(data, test_size=0.2):
     '''Spliting data into train and test set'''
     X = data.drop('Exited', axis=1)
     Y = data['Exited']
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=test_size, random_state=random_state, stratify=Y)
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=test_size, random_state=RANDOM_STATE, stratify=Y)
     return X_train, X_test, y_train, y_test
 
   
-def evaluation(model):
-    '''Accuracy score and roc auc score calculation,
-       roc curve and confusion matrix plots'''
-    # accuracy score
+def evaluation(model, X_test, y_test):
+    '''Accuracy score and ROC AUC score calculation; ROC curve and confusion matrix plots'''
+    # Accuracy score
     acc = cross_val_score(model, X_train, y_train, cv=10, scoring='accuracy')
     acc_score = round(acc.mean(), 2)
     print('Accuracy score: %s' % acc_score)
-    # roc auc score
+    
+    # ROC AUC score
     pred_prob = model.predict_proba(X_test)
     score = roc_auc_score(y_test, pred_prob[:,1])
     roc_score = round(score, 2)
     pred_y = model.predict(X_test)
     print('ROC AUC score: %s' % roc_score)
-    # plots
+    
+    # Plots
     print(plot_roc_curve(model, X_test, y_test))
     print(plot_conf_matrix(pred_y, y_test))
 
 
-def train_model(X_train, X_test, y_train, y_test):
-    ''' Calculating models with score'''
-    model = Pipeline(steps=[('scaler', StandardScaler()),
-                            ('classifier', RandomForestClassifier(n_estimators=200, 
-                                           criterion='entropy', random_state=0))])
+def train_model(X_train, X_test):
+    ''' Calculating model with score'''
+    model = Pipeline(steps=[
+            ('scaler', StandardScaler()),
+            ('classifier', RandomForestClassifier(n_estimators=N_ESTIMATORS, criterion='entropy', random_state=RANDOM_STATE))])
     model.fit(X_train, y_train)
-    scores = evaluation(model)
-    return scores
+    return model
 
   
 if __name__ == '__main__':
     df = read_data(URL)
-    X_train, X_test, y_train, y_test = splitting_data(df)
-    model = train_model(X_train, X_test, y_train, y_test)
-    # save the model
-    dump(model, 'models/rf_model.pkl')
+    if df is not None:
+        X_train, X_test, y_train, y_test = splitting_data(df)
+        model = train_model(X_train, X_test, y_train, y_test)
+        # Save the model 
+        dump(model, 'models/rf_model.pkl')
+        # Evaluate the model
+        evaluation(model, X_test, y_test)
