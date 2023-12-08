@@ -28,16 +28,20 @@ def clean_data(df):
 
 def read_data(path):
     '''Read and preprocess data'''
-    data = pd.read_csv(path)
+    try:
+        data = pd.read_csv(path)
+    except FileNotFoundError:
+        print(f"Error: File not found at {path}")
+        return None
     df = clean_data(data)
     return df
 
 
-def splitting_data(data):
+def splitting_data(data, test_size=0.2):
     '''Spliting data into train and test set'''
     X = data.drop('Exited', axis=1)
     Y = data['Exited']
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=RANDOM_STATE, stratify=Y)
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=test_size, random_state=RANDOM_STATE, stratify=Y)
     return X_train, X_test, y_train, y_test
 
 
