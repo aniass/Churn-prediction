@@ -41,19 +41,12 @@ def splitting_data(data):
     return X_train, X_test, y_train, y_test
 
 
-def acc_score(model):
-    """Accuracy score calculation from cross validation"""
-    acc = cross_val_score(model, X_train, y_train, cv=10, scoring='accuracy')
-    score = round(acc.mean(), 2)
-    return score
-
-
-def roc_score(model):
-    """Roc auc score calculation"""
+def calculate_scores(model, X_train, y_train, X_test, y_test):
+    """Calculate accuracy score using cross-validation and ROC AUC score"""
     pred_prob = model.predict_proba(X_test)
-    score = roc_auc_score(y_test, pred_prob[:,1])
-    auc_score = round(score, 2)
-    return auc_score
+    roc_auc = round(roc_auc_score(y_test, pred_prob[:, 1]), 2)
+    accuracy = round(cross_val_score(model, X_train, y_train, cv=10, scoring='accuracy').mean(), 2)
+    return roc_auc, accuracy
 
    
 def train_models(X_train, X_test, y_train, y_test):
@@ -71,17 +64,16 @@ def train_models(X_train, X_test, y_train, y_test):
                                 ('classifier', classifier)])
         model.fit(X_train, y_train)
         
-        score = roc_score(model)
-        score_acc = acc_score(model)
+        roc_auc, accuracy = calculate_scores(model, X_train, y_train, X_test, y_test)
         param_dict = {
                      'Model': classifier.__class__.__name__,
-                     'Roc Auc': score,
-                     'Accuracy score': score_acc
+                     'ROC AUC': roc_auc,
+                     'Accuracy score': accuracy
                      }
         models = models.append(pd.DataFrame(param_dict, index=[0]))
         
     models.reset_index(drop=True, inplace=True)
-    models_sorted = models.sort_values(by='Roc Auc', ascending=False)
+    models_sorted = models.sort_values(by='ROC AUC', ascending=False)
     return models_sorted
      
   
