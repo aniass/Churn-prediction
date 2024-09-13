@@ -46,7 +46,7 @@ def splitting_data(data, test_size=0.2):
 
 
 def calculate_scores(model, X_train, y_train, X_test, y_test):
-    """Calculate accuracy score using cross-validation and ROC AUC score"""
+    '''Calculate accuracy score using cross-validation and ROC AUC score'''
     pred_prob = model.predict_proba(X_test)
     roc_auc = round(roc_auc_score(y_test, pred_prob[:, 1]), 2)
     accuracy = round(cross_val_score(model, X_train, y_train, cv=10, scoring='accuracy').mean(), 2)
@@ -54,7 +54,7 @@ def calculate_scores(model, X_train, y_train, X_test, y_test):
 
    
 def train_models(X_train, X_test, y_train, y_test):
-    ''' Calculating models with score'''
+    '''Calculating models with score'''
     models = pd.DataFrame()
     classifiers = [
         LogisticRegression(random_state=RANDOM_STATE),
