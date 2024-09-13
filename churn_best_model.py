@@ -9,7 +9,7 @@ from helper_functions import plot_roc_curve, plot_conf_matrix
 from joblib import dump
 
 
-URL = 'data\Churn_Modelling.csv'
+URL = 'C:\Python Scripts\Datasets\churn\Churn_Modelling.csv'
 
 RANDOM_STATE = 0
 N_ESTIMATORS = 200
@@ -48,21 +48,17 @@ def evaluation(model, X_test, y_test):
     acc = cross_val_score(model, X_train, y_train, cv=10, scoring='accuracy')
     acc_score = round(acc.mean(), 2)
     print('Accuracy score: %s' % acc_score)
-    
     # ROC AUC score
     pred_prob = model.predict_proba(X_test)
     score = roc_auc_score(y_test, pred_prob[:,1])
     roc_score = round(score, 2)
     pred_y = model.predict(X_test)
     print('ROC AUC score: %s' % roc_score)
-    
-    # Plots
-    print(plot_roc_curve(model, X_test, y_test))
     print(plot_conf_matrix(pred_y, y_test))
 
 
 def train_model(X_train, X_test):
-    ''' Calculating model with score'''
+    '''Calculating model with score'''
     model = Pipeline(steps=[
             ('scaler', StandardScaler()),
             ('classifier', RandomForestClassifier(n_estimators=N_ESTIMATORS, criterion='entropy', random_state=RANDOM_STATE))])
@@ -74,8 +70,10 @@ if __name__ == '__main__':
     df = read_data(URL)
     if df is not None:
         X_train, X_test, y_train, y_test = splitting_data(df)
-        model = train_model(X_train, X_test, y_train, y_test)
+        model = train_model(X_train, y_train)
         # Save the model 
-        dump(model, 'models/rf_model.pkl')
+        #dump(model, 'models/rf_model.pkl')
         # Evaluate the model
         evaluation(model, X_test, y_test)
+        # Plots
+        print(plot_roc_curve(model, X_test, y_test))
