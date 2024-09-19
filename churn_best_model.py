@@ -2,14 +2,12 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import cross_val_score
 from sklearn.ensemble import RandomForestClassifier
-from helper_functions import plot_roc_curve, plot_conf_matrix
+from helper_functions import plot_conf_matrix, plot_roc_curve, evaluation
 from joblib import dump
 
 
-URL = 'C:\Python Scripts\Datasets\churn\Churn_Modelling.csv'
+URL = 'data\Churn_Modelling.csv'
 
 RANDOM_STATE = 0
 N_ESTIMATORS = 200
@@ -42,21 +40,6 @@ def splitting_data(data, test_size=0.2):
     return X_train, X_test, y_train, y_test
 
   
-def evaluation(model, X_test, y_test):
-    '''Accuracy score and ROC AUC score calculation; ROC curve and confusion matrix plots'''
-    # Accuracy score
-    acc = cross_val_score(model, X_train, y_train, cv=10, scoring='accuracy')
-    acc_score = round(acc.mean(), 2)
-    print('Accuracy score: %s' % acc_score)
-    # ROC AUC score
-    pred_prob = model.predict_proba(X_test)
-    score = roc_auc_score(y_test, pred_prob[:,1])
-    roc_score = round(score, 2)
-    pred_y = model.predict(X_test)
-    print('ROC AUC score: %s' % roc_score)
-    print(plot_conf_matrix(pred_y, y_test))
-
-
 def train_model(X_train, X_test):
     '''Calculating model with score'''
     model = Pipeline(steps=[
@@ -72,8 +55,10 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = splitting_data(df)
         model = train_model(X_train, y_train)
         # Save the model 
-        #dump(model, 'models/rf_model.pkl')
+        dump(model, 'models/rf_model.pkl')
         # Evaluate the model
-        evaluation(model, X_test, y_test)
+        preds = evaluation(model, X_train, y_train, X_test, y_test)
         # Plots
+        print(plot_conf_matrix(preds, y_test))
         print(plot_roc_curve(model, X_test, y_test))
+
