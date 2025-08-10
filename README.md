@@ -11,10 +11,10 @@ The dataset contains the details of the customers in a bank company such as cred
 The aim of the project were churn prediction in the bank customers. Churn is a term that means losing customers to the competition. A “Churned” customer is one who has cancelled their service and identification of such users beforehand can be invaluable from the company's point of view. It is very important because retain customers who want to leave us is in many cases much cheaper than acquiring new ones. In the analysis I have used different machine learning classifiers to predicted whether the client is going to leave the bank or not.
 
 ## Project contains:
-- Part 1: Exploratory Data Analysis - **Churn_EDA.ipynb**
-- Part 2: Churn prediction in the bank customers - **Churn.ipynb**
+- **Part 1: Exploratory Data Analysis** - Churn_EDA.ipynb
+- **Part 2: Churn prediction in the bank customers** - Churn.ipynb
 - Python scripts to train ML models - **churn_models.py, churn_best_model.py, helper_functions.py**
-- models - models used in the project.
+- models - models used in the project
     
 ## Technologies
 The project is created with:
